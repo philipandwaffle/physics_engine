@@ -1,4 +1,4 @@
-mod acceleration{
+pub mod acceleration{
     use bevy::{prelude::Component, math::{Vec2, Vec3}};
     #[derive(Component)]
     pub struct Acc2{
@@ -12,7 +12,7 @@ mod acceleration{
     }
 }
 
-mod force{
+pub mod force{
     use bevy::{prelude::Component, math::{Vec2, Vec3}};
 
     #[derive(Component)]
@@ -27,17 +27,7 @@ mod force{
     }
 }
 
-mod time{
-    use bevy::{prelude::Component};
-
-    #[derive(Component)]
-    pub struct TimeStep{
-        pub time_step: f32,
-        pub delta_time: f32,
-    }
-}
-
-mod mass {    
+pub mod mass {    
     use bevy::{prelude::Component};
 
     #[derive(Component)]
@@ -46,7 +36,7 @@ mod mass {
     }
 }
 
-mod mesh{
+pub mod mesh{
     use bevy::{prelude::Component, math::{Vec2, Vec3}};
 
     #[derive(Component)]
@@ -65,4 +55,35 @@ mod mesh{
         pub end: Vec3,
         pub width: f32,
     }
+}
+
+pub mod drag{
+    use bevy::{prelude::Component, math::{Vec2, Vec3}};
+
+    #[derive(Component)]
+    pub struct Drag2{
+        pub drag_coefficient: f32,
+        pub fluid_density: f32,
+        pub fluid_vel: Vec2,
+    }
+    
+    #[derive(Component)]
+    pub struct Drag3{
+        pub drag_coefficient: f32,
+        pub fluid_density: f32,
+        pub fluid_vel: Vec3,
+    }
+}
+
+pub mod system_identity_components {
+    use bevy::prelude::Component;
+
+    #[derive(Component)]
+    pub struct Movable;
+    
+    #[derive(Component)]
+    pub struct Force;
+
+    #[derive(Component)]
+    pub struct ExperienceDrag;
 }

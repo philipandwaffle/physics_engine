@@ -77,15 +77,15 @@ fn spawn_entities(
         DEFAULT_IMAGE_HANDLE.typed::<Image>(),
         Acc2{
             acc: vec2(0., 0.),
-            vel: vec2(1., 0.),
+            vel: vec2(1., 1.),
         },
         Drag2{
-            drag_coefficient: 1000.5,
+            drag_coefficient: 0.5,
             fluid_density: 1.2754,
             fluid_vel: vec2(0., 0.),
         },
         Mass{
-            mass: 100.,
+            mass: 1.,
         },
         Movable,
         ExperienceDrag,

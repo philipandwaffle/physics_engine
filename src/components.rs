@@ -75,15 +75,30 @@ pub mod drag{
     }
 }
 
+// components in this module allow systems that have overlapping components to be properly identified
 pub mod system_identity_components {
     use bevy::prelude::Component;
 
+    // allows entities to be movable
+    // required components:
+    //  Acc2 or Acc 3
     #[derive(Component)]
     pub struct Movable;
     
     #[derive(Component)]
     pub struct Force;
 
+    // allows entities to be experience drag based on the fluid's density and relative speed
+    // required components:
+    //  Acc2 or Acc 3
+    //  Mass
     #[derive(Component)]
     pub struct ExperienceDrag;
+
+    // allows entities to experience gravity
+    // required components:
+    //  Acc2 or Acc 3
+    //  Mass
+    #[derive(Component)]
+    pub struct HasGravity;
 }

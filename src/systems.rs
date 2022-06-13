@@ -54,21 +54,25 @@ pub mod drag_system{
 pub mod gravity_system{
     use std::vec;
 
-    use bevy::{prelude::{Query, Res, Entity}, math::vec2};
-    use crate::{components::{mass::{Mass, self}, acceleration::Acc2, system_identity_components::HasGravity}, TimeStep};
+    use bevy::{prelude::{Query, Res, Entity}, math::{vec2, Vec2}};
+    use crate::{components::{mass::{Mass, self}, acceleration::Acc2, system_identity_components::HasGravity}, TimeStep, GravitationalConstant};
 
     pub fn gravity(
         time_step: Res<TimeStep>,
+        g_const: Res<GravitationalConstant>,
         mut query: Query<(Entity, &mut Acc2, &Mass, &HasGravity)>
     ){
-        for (entity, mut acc, mass, _gravity) in query.iter_mut(){
-
-            query.iter().for_each(|e|{
-                if (entity.id() != e.0.id()){
-
-                }
-            });
-            //entities.push((entity.id(), mass.mass, ));
+        let mut entities: Vec<(Entity, f32, Vec2)> = vec![];       
+        
+        for (entity, _acc, mass, _gravity) in query.iter(){
+            entities.push((entity, mass.mass, vec2(0., 0.)));
         }
+
+        let mut i = 0;
+        entities.iter_mut().for_each(|e|{
+            
+        });
+        let f = entities.get(0).unwrap().0;
+        query.get(entities.get(0).unwrap().0);
     }
 }

@@ -13,6 +13,10 @@ pub struct TimeStep{
     time_step: f32,
 }
 
+pub struct GravitationalConstant{
+    g: f32
+}
+
 pub struct WinSize {
 	pub w: f32,
 	pub h: f32,
@@ -25,6 +29,9 @@ fn main() {
         .insert_resource(TimeStep{
             time: Default::default(),
             time_step: 1./64.
+        })
+        .insert_resource(GravitationalConstant{            
+            g: 6.6743 * 1. / (10 as i32).pow(11) as f32,
         })
         .insert_resource(WindowDescriptor {
 			title: "Physics Engine".to_string(),

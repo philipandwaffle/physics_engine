@@ -54,24 +54,35 @@ pub mod drag_system{
 pub mod gravity_system{
     use std::vec;
 
-    use bevy::{prelude::{Query, Res, Entity}, math::{vec2, Vec2}};
-    use crate::{components::{mass::{Mass, self}, acceleration::Acc2, system_identity_components::HasGravity}, TimeStep, GravitationalConstant};
+    use bevy::{prelude::{Query, Res, Entity, Transform}, math::{vec2, Vec2, Vec3, vec3}};
+    use crate::{components::{mass::Mass, acceleration::Acc2, system_identity_components::HasGravity}, TimeStep, GravitationalConstant};
 
     pub fn gravity(
         time_step: Res<TimeStep>,
         g_const: Res<GravitationalConstant>,
-        mut query: Query<(Entity, &mut Acc2, &Mass, &HasGravity)>
+        mut query: Query<(Entity, &Transform, &mut Acc2, &Mass, &HasGravity)>
     ){
-        let mut entities: Vec<(Entity, f32, Vec2)> = vec![];       
+        let mut entities: Vec<(Entity, f32, Vec3, Vec2)> = vec![];       
         
-        for (entity, _acc, mass, _gravity) in query.iter(){
-            entities.push((entity, mass.mass, vec2(0., 0.)));
+        for (entity, transform, _acc, mass, _gravity) in query.iter(){
+            entities.push((entity, mass.mass, transform.translation, vec2(0., 0.)));
         }
 
-        let mut i = 0;
-        entities.iter_mut().for_each(|e|{
-            
-        });
+        for i in 0..entities.len() - 1{
+            let mut total_force = vec3(0., 0., 0.);
+            let m1 = entities.get(i).unwrap().1;
+            for j in 0..entities.len() - 1{
+                if i != j {
+                    let m2 = entities.get(j).unwrap().1;
+                    let dir = entities.get(j).unwrap().2 - entities.get(i).unwrap().2;
+                    let r = dir.length();
+                    let force = g_const.g * ((m1 * m2) / r.powi(2));
+                    total_force += force * dir.normalize();
+                }
+            }
+            let foo = query.get_mut(entities.get(i).unwrap().0).unwrap().2.acc;
+        }
+
         let f = entities.get(0).unwrap().0;
         query.get(entities.get(0).unwrap().0);
     }

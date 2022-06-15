@@ -1,12 +1,12 @@
-use bevy::{DefaultPlugins, core::Time, window::{Windows, WindowDescriptor}, ecs::bundle, render::texture::DEFAULT_IMAGE_HANDLE, math::{vec2, vec3}};
+use bevy::{DefaultPlugins, core::Time, window::{Windows, WindowDescriptor}, render::texture::DEFAULT_IMAGE_HANDLE, math::vec3};
 use bevy::prelude::*;
-mod components;
+use components::{*, system_identity_components::*};
+
+use crate::systems::*;
+
 mod systems;
+mod components;
 
-use components::{acceleration::Acc2, system_identity_components::{Movable, ExperienceDrag}, drag::Drag2, mass::{self, Mass}};
-use systems::movable_system::move_entities;
-
-use crate::systems::drag_system::apply_drag;
 
 pub struct TimeStep{
     time: Time,
@@ -14,7 +14,7 @@ pub struct TimeStep{
 }
 
 pub struct GravitationalConstant{
-    g: f32
+    g: f64
 }
 
 pub struct WinSize {
@@ -24,14 +24,14 @@ pub struct WinSize {
 
 fn main() {
     println!("Hello, world!");
-
     App::new()
         .insert_resource(TimeStep{
             time: Default::default(),
             time_step: 1./64.
         })
         .insert_resource(GravitationalConstant{            
-            g: 6.6743 * 1. / (10 as i32).pow(11) as f32,
+            //g: 6.6743 * 1. / (10. as f64).powf(11.) as f64,
+            g: 100.,
         })
         .insert_resource(WindowDescriptor {
 			title: "Physics Engine".to_string(),
@@ -43,6 +43,7 @@ fn main() {
         .add_startup_system(spawn_entities)
         .add_system(move_entities)
         .add_system(apply_drag)
+        .add_system(gravity)
         .run();
 }
 
@@ -71,7 +72,7 @@ fn spawn_entities(
     // square
     commands.spawn_bundle((       
         Transform {
-            translation: vec3(0., 0., 0.),
+            translation: vec3(0., 200., 0.),
             scale: vec3(100., 100., 100.),
             rotation: Quat::IDENTITY,
         },
@@ -82,19 +83,50 @@ fn spawn_entities(
         GlobalTransform::default(),
         Visibility::default(),
         DEFAULT_IMAGE_HANDLE.typed::<Image>(),
-        Acc2{
-            acc: vec2(0., 0.),
-            vel: vec2(1., 1.),
+        Acc{
+            acc: vec3(0., 0., 0.),
+            vel: vec3(0.5, 0., 0.),
         },
-        Drag2{
+        Drag{
             drag_coefficient: 0.5,
             fluid_density: 1.2754,
-            fluid_vel: vec2(0., 0.),
+            fluid_vel: vec3(5., 0., 0.),
         },
         Mass{
             mass: 1.,
         },
         Movable,
-        ExperienceDrag,
+        //ExperienceDrag,
+        HasGravity,
+    ));
+
+    commands.spawn_bundle((       
+        Transform {
+            translation: vec3(0., -200., 0.),
+            scale: vec3(100., 100., 100.),
+            rotation: Quat::IDENTITY,
+        },
+        Sprite {
+            color: Color::rgb(1., 1., 1.),
+            ..Default::default()
+        },
+        GlobalTransform::default(),
+        Visibility::default(),
+        DEFAULT_IMAGE_HANDLE.typed::<Image>(),
+        Acc{
+            acc: vec3(0., 0., 0.),
+            vel: vec3(-0.5, 0., 0.),
+        },
+        Drag{
+            drag_coefficient: 0.5,
+            fluid_density: 1.2754,
+            fluid_vel: vec3(0., 0., 0.),
+        },
+        Mass{
+            mass: 1.,
+        },
+        Movable,
+        //ExperienceDrag,
+        HasGravity,
     ));
 }

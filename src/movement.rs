@@ -21,8 +21,19 @@ impl RigidBody{
         }
     }
 }
+impl Default for RigidBody{
+    fn default() -> Self {
+        Self { 
+            mass: None, 
+            acc: vec3(0., 0., 0.),
+            vel: vec3(0., 0., 0.),
+            move_enabled: true, 
+            gravity_enabled: true 
+        }
+    }
+}
 
-pub fn move_entities(
+pub fn movement_sys(
     time: Res<Time>,
     mut query: Query<(&mut Transform, &mut RigidBody)>
 ){
@@ -35,7 +46,7 @@ pub fn move_entities(
     }
 }
 
-pub fn apply_gravity(
+pub fn gravity_sys(
     g_const: Res<GravitationalConstant>,
     mut query: Query<(Entity, &mut Transform, &mut RigidBody)>
 ){

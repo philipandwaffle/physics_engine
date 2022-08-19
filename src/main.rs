@@ -3,9 +3,11 @@ use bevy::prelude::*;
 use components::{*, system_identity_components::*};
 
 use crate::systems::*;
+use crate::movement::*;
 
 mod systems;
 mod components;
+mod movement;
 
 
 pub struct TimeStep{
@@ -14,7 +16,7 @@ pub struct TimeStep{
 }
 
 pub struct GravitationalConstant{
-    g: f64
+    g: f32
 }
 
 pub struct WinSize {
@@ -25,13 +27,10 @@ pub struct WinSize {
 fn main() {
     println!("Hello, world!");
     App::new()
-        .insert_resource(TimeStep{
-            time: Default::default(),
-            time_step: 1./64.
-        })
+        .insert_resource(Time::default())
         .insert_resource(GravitationalConstant{            
             //g: 6.6743 * 1. / (10. as f64).powf(11.) as f64,
-            g: 100.,
+            g: 1000.,
         })
         .insert_resource(WindowDescriptor {
 			title: "Physics Engine".to_string(),
@@ -41,9 +40,8 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup_system)
         .add_startup_system(spawn_entities)
-        .add_system(move_entities)
-        .add_system(apply_drag)
-        .add_system(gravity)
+        .add_system(apply_gravity)
+        .add_system(move_entities)        
         .run();
 }
 
@@ -52,7 +50,9 @@ fn setup_system(
 	mut windows: ResMut<Windows>,
 ) {
 	// camera
-	commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    let mut cam = OrthographicCameraBundle::new_2d();
+    cam.orthographic_projection.scale = 2.;
+	commands.spawn_bundle(cam);
 
 	// capture window size
 	let window = windows.get_primary_mut().unwrap();
@@ -72,7 +72,7 @@ fn spawn_entities(
     // square
     commands.spawn_bundle((       
         Transform {
-            translation: vec3(0., 200., 0.),
+            translation: vec3( 200., 0.,0.),
             scale: vec3(100., 100., 100.),
             rotation: Quat::IDENTITY,
         },
@@ -83,26 +83,19 @@ fn spawn_entities(
         GlobalTransform::default(),
         Visibility::default(),
         DEFAULT_IMAGE_HANDLE.typed::<Image>(),
-        Acc{
+        RigidBody {
+            mass: Some(200.),
             acc: vec3(0., 0., 0.),
-            vel: vec3(0.5, 0., 0.),
+            vel: vec3(0., -100., 0.),
+            move_enabled: true,
+            gravity_enabled: true,            
         },
-        Drag{
-            drag_coefficient: 0.5,
-            fluid_density: 1.2754,
-            fluid_vel: vec3(5., 0., 0.),
-        },
-        Mass{
-            mass: 1.,
-        },
-        Movable,
-        //ExperienceDrag,
-        HasGravity,
     ));
 
+    // square
     commands.spawn_bundle((       
         Transform {
-            translation: vec3(0., -200., 0.),
+            translation: vec3( -200., 0.,0.),
             scale: vec3(100., 100., 100.),
             rotation: Quat::IDENTITY,
         },
@@ -113,20 +106,58 @@ fn spawn_entities(
         GlobalTransform::default(),
         Visibility::default(),
         DEFAULT_IMAGE_HANDLE.typed::<Image>(),
-        Acc{
+        RigidBody {
+            mass: Some(200.),
             acc: vec3(0., 0., 0.),
-            vel: vec3(-0.5, 0., 0.),
+            vel: vec3(0., 100., 0.),
+            move_enabled: true,
+            gravity_enabled: true,            
         },
-        Drag{
-            drag_coefficient: 0.5,
-            fluid_density: 1.2754,
-            fluid_vel: vec3(0., 0., 0.),
+    ));
+
+    // square
+    commands.spawn_bundle((       
+        Transform {
+            translation: vec3( 0., 200., 0.),
+            scale: vec3(100., 100., 100.),
+            rotation: Quat::IDENTITY,
         },
-        Mass{
-            mass: 1.,
+        Sprite {
+            color: Color::rgb(1., 1., 1.),
+            ..Default::default()
         },
-        Movable,
-        //ExperienceDrag,
-        HasGravity,
+        GlobalTransform::default(),
+        Visibility::default(),
+        DEFAULT_IMAGE_HANDLE.typed::<Image>(),
+        RigidBody {
+            mass: Some(200.),
+            acc: vec3(0., 0., 0.),
+            vel: vec3(100., 0., 0.),
+            move_enabled: true,
+            gravity_enabled: true,            
+        },
+    ));
+
+    // square
+    commands.spawn_bundle((       
+        Transform {
+            translation: vec3( 0., -200.,0.),
+            scale: vec3(100., 100., 100.),
+            rotation: Quat::IDENTITY,
+        },
+        Sprite {
+            color: Color::rgb(1., 1., 1.),
+            ..Default::default()
+        },
+        GlobalTransform::default(),
+        Visibility::default(),
+        DEFAULT_IMAGE_HANDLE.typed::<Image>(),
+        RigidBody {
+            mass: Some(200.),
+            acc: vec3(0., 0., 0.),
+            vel: vec3(-100., 0., 0.),
+            move_enabled: true,
+            gravity_enabled: true,            
+        },
     ));
 }

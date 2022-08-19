@@ -38,7 +38,7 @@ pub struct Drag{
 
 // components in this module allow systems that have overlapping components to be properly identified
 pub mod system_identity_components {
-    use bevy::prelude::Component;
+    use bevy::{prelude::Component, math::Vec3};
 
     // allows entities to be movable
     // required components:
@@ -61,5 +61,5 @@ pub mod system_identity_components {
     //  Acc
     //  Mass
     #[derive(Component)]
-    pub struct HasGravity;
+    pub struct ExperienceGravity;
 }

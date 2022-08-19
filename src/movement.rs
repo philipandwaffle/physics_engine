@@ -1,6 +1,6 @@
 use bevy::{prelude::*, math::vec3};
 
-use crate::GravitationalConstant;
+use crate::{GravitationalConstant, TimeScale};
 
 #[derive(Component)]
 pub struct RigidBody{
@@ -20,6 +20,10 @@ impl RigidBody{
             self.vel += f / self.mass.unwrap();
         }
     }
+
+    pub fn apply_vel(&mut self, vel: Vec3){
+        self.vel += vel
+    }
 }
 impl Default for RigidBody{
     fn default() -> Self {
@@ -34,10 +38,12 @@ impl Default for RigidBody{
 }
 
 pub fn movement_sys(
+    time_scale: Res<TimeScale>,
     time: Res<Time>,
     mut query: Query<(&mut Transform, &mut RigidBody)>
 ){
-    let delta_time = time.delta_seconds();
+    //let delta_time = time.time.delta_seconds() * time.time_scale;
+    let delta_time = time.delta_seconds() * time_scale.scale;
     for (mut t, mut r) in query.iter_mut(){
         if r.move_enabled{
             r.apply_acc(&delta_time.clone());

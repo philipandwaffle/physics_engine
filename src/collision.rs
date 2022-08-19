@@ -19,10 +19,17 @@ impl SquareCollision{
     }
 }
 
-pub fn collision_sys(
-    query: Query<(&mut RigidBody, &Transform, &SquareCollision)>
-){
+#[derive(Component)]
+pub struct CircleCollision{
+    pub radius: f32
+}
 
+pub fn collision_sys(
+    mut query: Query<(&mut RigidBody, &Transform, &SquareCollision)>
+){
+    for (mut rb, t, sc) in query.iter_mut(){
+        // F = m(v-u)/t
+    }
 }
 
 // pub fn has_collided(
@@ -31,3 +38,5 @@ pub fn collision_sys(
 // ) -> bool {
 //     if v1.1.x < v1
 // }
+
+//pub fn has_collided()

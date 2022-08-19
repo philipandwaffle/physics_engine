@@ -1,6 +1,6 @@
-use bevy::{DefaultPlugins, window::{Windows, WindowDescriptor}, render::texture::DEFAULT_IMAGE_HANDLE, math::vec3, reflect::erased_serde::private::serde::__private::de};
+use bevy::{DefaultPlugins, window::{Windows, WindowDescriptor}, math::vec3};
 use bevy::prelude::*;
-use bevy::time::*;
+use bevy_prototype_lyon::prelude::*;
 
 use crate::movement::*;
 use crate::collision::*;
@@ -22,6 +22,7 @@ fn main() {
     App::new()
         .insert_resource(Time::default())
         .insert_resource(GravitationalConstant{
+            //due to floating point rounding errors don't use the actual gravitational constant
             //g: 6.6743 * 1. / (10. as f64).powf(11.) as f64,
             g: 500.,
         })
@@ -31,6 +32,7 @@ fn main() {
 			..Default::default()
 		})
         .add_plugins(DefaultPlugins)
+        .add_plugin(ShapePlugin)
         .add_startup_system(setup_system)
         .add_startup_system(spawn_entities)
         .add_system(gravity_sys)
@@ -43,10 +45,9 @@ fn setup_system(
 	mut windows: ResMut<Windows>,
 ) {
 	// camera    
-    // let mut cam = Camera2dBundle::default();
-    // cam.projection.scale = 2.;
-	// commands.spawn_bundle(cam);
-	commands.spawn_bundle(Camera2dBundle::default());
+    let mut cam = Camera2dBundle::default();    
+    cam.projection.scale = 2.;
+	commands.spawn_bundle(cam);	
 
 	// capture window size
 	let window = windows.get_primary_mut().unwrap();
@@ -59,53 +60,63 @@ fn setup_system(
 
 fn spawn_entities(
     mut commands: Commands,
-){    
-    commands.spawn_bundle(create_sprite(
-        Color::rgb(1., 1., 1.), 
-        vec3( 200., 0.,0.), 
-        vec3(100., 100., 100.)
-    ))
-    .insert(RigidBody {
-        mass: Some(200.),        
-        vel: vec3(0., -100., 0.),
+){
+    let circle = create_reg_poly(100, 50.);
+
+    commands.spawn_bundle(GeometryBuilder::build_as(
+        &circle,
+        DrawMode::Fill(FillMode::color(Color::WHITE)),
+        Transform{
+            translation: vec3( 0., 200.,0.),
+            ..default()
+        },
+    )).insert(RigidBody {
+        mass: Some(200.),
+        vel: vec3(-100., 0., 0.),
         ..default()
     });
-
-    commands.spawn_bundle(create_sprite(
-        Color::rgb(1., 1., 1.), 
-        vec3( -200., 0.,0.), 
-        vec3(100., 100., 100.)
-    ))
-    .insert(RigidBody {
-        mass: Some(200.),        
-        vel: vec3(0., 100., 0.),
-        ..default()
-    });
-
-    commands.spawn_bundle(create_sprite(
-        Color::rgb(1., 1., 1.), 
-        vec3( 0., 200.,0.), 
-        vec3(100., 100., 100.)
-    ))
-    .insert(RigidBody {
-        mass: Some(200.),        
+    
+    commands.spawn_bundle(GeometryBuilder::build_as(
+        &circle,
+        DrawMode::Fill(FillMode::color(Color::WHITE)),
+        Transform{
+            translation: vec3( 0., -200.,0.),
+            ..default()
+        },
+    )).insert(RigidBody {
+        mass: Some(200.),
         vel: vec3(100., 0., 0.),
         ..default()
     });
 
-    commands.spawn_bundle(create_sprite(
-        Color::rgb(1., 1., 1.), 
-        vec3( 0., -200.,0.), 
-        vec3(100., 100., 100.)
-    ))
-    .insert(RigidBody {
-        mass: Some(200.),        
-        vel: vec3(-100., 0., 0.),
+    commands.spawn_bundle(GeometryBuilder::build_as(
+        &circle,
+        DrawMode::Fill(FillMode::color(Color::WHITE)),
+        Transform{
+            translation: vec3( 200., 0.,0.),
+            ..default()
+        },
+    )).insert(RigidBody {
+        mass: Some(200.),
+        vel: vec3(0., 100., 0.),
+        ..default()
+    });
+
+    commands.spawn_bundle(GeometryBuilder::build_as(
+        &circle,
+        DrawMode::Fill(FillMode::color(Color::WHITE)),
+        Transform{
+            translation: vec3( -200., 0.,0.),
+            ..default()
+        },
+    )).insert(RigidBody {
+        mass: Some(200.),
+        vel: vec3(0., -100., 0.),
         ..default()
     });
 }
 
-fn create_sprite(
+fn create_square_sprite(
     colour: Color,
     translation: Vec3,
     scale: Vec3,
@@ -122,4 +133,15 @@ fn create_sprite(
         },
         ..default()
     }
+}
+
+fn create_reg_poly(
+    sides: usize,
+    radius: f32,
+) -> RegularPolygon {
+    return shapes::RegularPolygon {
+        sides: sides,
+        feature: RegularPolygonFeature::Radius(radius),
+        ..shapes::RegularPolygon::default()
+    };
 }

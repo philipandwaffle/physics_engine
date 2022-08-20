@@ -7,6 +7,132 @@ pub mod GravityDemos{
 
     use super::create_reg_poly;
 
+    pub fn animation(
+        mut commands: Commands
+    ){
+        let circle = create_reg_poly(100, 50.);
+
+        commands.spawn_bundle(GeometryBuilder::build_as(
+            &circle,
+            DrawMode::Fill(FillMode::color(Color::WHITE)),
+            Transform{
+                translation: vec3( 0., 200.,0.),
+                ..default()
+            },
+        )).insert(RigidBody {
+            mass: Some(200.),
+            vel: vec3(-10., 0., 0.),
+            ..default()
+        }).insert(CircleCollision{
+            radius: 50.
+        });
+        
+        commands.spawn_bundle(GeometryBuilder::build_as(
+            &circle,
+            DrawMode::Fill(FillMode::color(Color::WHITE)),
+            Transform{
+                translation: vec3( 0., -200.,0.),
+                ..default()
+            },
+        )).insert(RigidBody {
+            mass: Some(200.),
+            vel: vec3(10., 0., 0.),
+            ..default()
+        }).insert(CircleCollision{
+            radius: 50.
+        });
+
+        commands.spawn_bundle(GeometryBuilder::build_as(
+            &circle,
+            DrawMode::Fill(FillMode::color(Color::WHITE)),
+            Transform{
+                translation: vec3( 200., 0.,0.),
+                ..default()
+            },
+        )).insert(RigidBody {
+            mass: Some(200.),
+            vel: vec3(0., 10., 0.),
+            ..default()
+        }).insert(CircleCollision{
+            radius: 50.
+        });
+
+        commands.spawn_bundle(GeometryBuilder::build_as(
+            &circle,
+            DrawMode::Fill(FillMode::color(Color::WHITE)),
+            Transform{
+                translation: vec3( -200., 0.,0.),
+                ..default()
+            },
+        )).insert(RigidBody {
+            mass: Some(200.),
+            vel: vec3(0., -10., 0.),
+            ..default()
+        }).insert(CircleCollision{
+            radius: 50.
+        });
+
+        commands.spawn_bundle(GeometryBuilder::build_as(
+            &circle,
+            DrawMode::Fill(FillMode::color(Color::WHITE)),
+            Transform{
+                translation: vec3( 300., 300.,0.),
+                ..default()
+            },
+        )).insert(RigidBody {
+            mass: Some(400.),
+            vel: vec3(0., -20., 0.),
+            ..default()
+        }).insert(CircleCollision{
+            radius: 50.
+        });
+        
+        commands.spawn_bundle(GeometryBuilder::build_as(
+            &circle,
+            DrawMode::Fill(FillMode::color(Color::WHITE)),
+            Transform{
+                translation: vec3( 300., -300.,0.),
+                ..default()
+            },
+        )).insert(RigidBody {
+            mass: Some(400.),
+            vel: vec3(-20., 0., 0.),
+            ..default()
+        }).insert(CircleCollision{
+            radius: 50.
+        });
+
+        commands.spawn_bundle(GeometryBuilder::build_as(
+            &circle,
+            DrawMode::Fill(FillMode::color(Color::WHITE)),
+            Transform{
+                translation: vec3( -300., -300.,0.),
+                ..default()
+            },
+        )).insert(RigidBody {
+            mass: Some(400.),
+            vel: vec3(0., 20., 0.),
+            ..default()
+        }).insert(CircleCollision{
+            radius: 50.
+        });
+
+        commands.spawn_bundle(GeometryBuilder::build_as(
+            &circle,
+            DrawMode::Fill(FillMode::color(Color::WHITE)),
+            Transform{
+                translation: vec3( -300., 300.,0.),
+                ..default()
+            },
+        )).insert(RigidBody {
+            mass: Some(400.),
+            vel: vec3(20., 0., 0.),
+            ..default()
+        }).insert(CircleCollision{
+            radius: 50.
+        });
+    }
+
     pub fn four_body(
         mut commands: Commands,
     ){

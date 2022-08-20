@@ -1,6 +1,6 @@
 use bevy::{prelude::*, math::vec3};
 
-use crate::{GravitationalConstant, TimeScale};
+use crate::{GravitationalConstant, TimeScale, WinSize};
 
 #[derive(Component)]
 pub struct RigidBody{
@@ -84,5 +84,29 @@ pub fn gravity_sys(
             }
         }
         query.get_mut(entities.get(i).unwrap().0).unwrap().2.apply_force(total_force)
+    }
+}
+
+pub fn world_wrap_sys(
+    window: Res<WinSize>,
+    mut query: Query<(&mut Transform, &RigidBody)>
+){
+    let mul = 1.01;
+    let max_y = window.h * mul;
+    let max_x = window.w * mul;
+
+    for (mut t, _r) in query.iter_mut(){
+        if t.translation.x > max_x{
+            t.translation.x = -max_x;
+        }
+        if t.translation.x < -max_x{
+            t.translation.x = max_x;
+        }
+        if t.translation.y > max_y{
+            t.translation.y = -max_y;
+        }
+        if t.translation.y < -max_y{
+            t.translation.y = max_y;
+        }
     }
 }

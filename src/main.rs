@@ -31,7 +31,7 @@ fn main() {
         .insert_resource(GravitationalConstant{
             //due to floating point rounding errors don't use the actual gravitational constant
             //g: 6.6743 * 1. / (10. as f64).powf(11.) as f64,
-            g: 5000.,
+            g: 25.,
         })
         .insert_resource(WindowDescriptor{
 			title: "Physics Engine".to_string(),
@@ -41,11 +41,12 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_startup_system(setup_system)
-        .add_startup_system(spawn_entities)
-        //.add_startup_system(four_body)
+        //.add_startup_system(spawn_entities)
+        .add_startup_system(animation)
         .add_system(gravity_sys)
         .add_system(movement_sys)
-        .add_system(collision_sys)
+        .add_system(world_wrap_sys)
+        //.add_system(collision_sys)
         .run();
 }
 
